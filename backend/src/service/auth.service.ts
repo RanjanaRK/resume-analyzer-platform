@@ -119,3 +119,10 @@ export const getAccesstokenService = async (refreshToken: string) => {
 
   return accessToken;
 };
+
+export const logoutService = async (refreshToken: string) => {
+  await UserModel.findOneAndUpdate(
+    { refreshtoken: refreshToken },
+    { refreshtoken: "" },
+  );
+};

@@ -2,6 +2,7 @@ import type { RequestHandler } from "express";
 import {
   getAccesstokenService,
   loginService,
+  logoutService,
   registerService,
 } from "../service/auth.service.js";
 import {
@@ -66,6 +67,27 @@ export const getAccessTokenController: RequestHandler = async (req, res) => {
 
     return res.status(200).json({
       message: "Access token generated",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+export const logout: RequestHandler = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshtoken;
+
+    await logoutService(refreshToken);
+
+    res.clearCookie("accesstoken", accessTokenOptions);
+    res.clearCookie("refreshtoken", refreshTokenOptions);
+
+    return res.status(200).json({
+      message: "User logged out successfully",
       success: true,
     });
   } catch (error) {

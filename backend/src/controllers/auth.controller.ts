@@ -1,11 +1,9 @@
-import bcrypt from "bcryptjs";
 import type { RequestHandler } from "express";
-import UserModel from "../models/user.model.js";
 import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/generateTokens.js";
-import { loginService, registerService } from "../service/auth.service.js";
+  getAccesstokenService,
+  loginService,
+  registerService,
+} from "../service/auth.service.js";
 import {
   accessTokenOptions,
   refreshTokenOptions,
@@ -49,4 +47,31 @@ export const login: RequestHandler = async (req, res) => {
       role: isExisted.role,
     },
   });
+};
+
+export const getAccessTokenController: RequestHandler = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshtoken;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        message: "Unauthorized",
+        success: false,
+      });
+    }
+
+    const accessToken = await getAccesstokenService(refreshToken);
+
+    res.cookie("accesstoken", accessToken, accessTokenOptions);
+
+    return res.status(200).json({
+      message: "Access token generated",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
 };

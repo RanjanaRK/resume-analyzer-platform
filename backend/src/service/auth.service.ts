@@ -4,6 +4,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/generateTokens.js";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import env from "../config/env.js";
 
 export const registerService = async (data: any) => {
   try {
@@ -90,4 +92,30 @@ export const loginService = async (data: any) => {
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+export const getAccesstokenService = async (refreshToken: string) => {
+  let decode = jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET) as JwtPayload;
+
+  if (!decode) {
+    throw new Error("Invalid refresh token");
+  }
+
+  // if (decode?.exp < Date.now() / 1000) {
+  //   throw new Error("Refresh token expired");
+  // }
+
+  const user = await UserModel.findById(decode.id).select("-password");
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.refreshtoken !== refreshToken) {
+    throw new Error("Unauthorized");
+  }
+
+  const accessToken = generateAccessToken(user._id.toString(), user.role);
+
+  return accessToken;
 };

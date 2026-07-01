@@ -49,3 +49,45 @@ export const registerService = async (data: any) => {
     throw new Error(error);
   }
 };
+
+export const loginService = async (data: any) => {
+  try {
+    const { email, password } = data;
+
+    if (!email || !password) {
+      throw new Error("All fields are required");
+    }
+
+    const isExisted = await UserModel.findOne({ email });
+
+    if (!isExisted) {
+      throw new Error("isExisted not found");
+    }
+
+    const isMatch = bcrypt.compareSync(password, isExisted.password);
+
+    if (!isMatch) {
+      throw new Error("Invalid credentials");
+    }
+
+    const accessToken = generateAccessToken(
+      isExisted._id.toString(),
+      isExisted.role,
+    );
+    const refreshToken = generateRefreshToken(
+      isExisted._id.toString(),
+      isExisted.role,
+    );
+
+    isExisted.refreshtoken = refreshToken;
+    await isExisted.save();
+
+    return {
+      accessToken,
+      refreshToken,
+      isExisted,
+    };
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};

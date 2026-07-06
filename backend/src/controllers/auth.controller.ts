@@ -4,6 +4,7 @@ import {
   loginService,
   logoutService,
   registerService,
+  verifyEmailService,
 } from "../service/auth.service.js";
 import {
   accessTokenOptions,
@@ -40,6 +41,28 @@ export const login: RequestHandler = async (req, res) => {
       role: isExisted.role,
     },
   });
+};
+
+export const verifyEmail: RequestHandler = async (req, res, next) => {
+  try {
+    const { token } = req.query;
+
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token is required.",
+      });
+    }
+
+    await verifyEmailService(token);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully. You can now log in.",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getAccessTokenController: RequestHandler = async (req, res) => {

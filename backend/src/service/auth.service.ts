@@ -76,6 +76,10 @@ export const loginService = async (data: any) => {
       throw new Error("Invalid credentials");
     }
 
+    if (!isExisted.emailVerified) {
+      throw new Error("Email not verified");
+    }
+
     const accessToken = generateAccessToken(
       isExisted._id.toString(),
       isExisted.role,
@@ -93,6 +97,37 @@ export const loginService = async (data: any) => {
       refreshToken,
       isExisted,
     };
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const verifyEmailService = async (emailToken: string) => {
+  try {
+    const decoded = jwt.verify(
+      emailToken,
+      env.EMAIL_VERIFICATION_TOKEN,
+    ) as JwtPayload;
+
+    if (!decoded) {
+      throw new Error("Invalid email verification token");
+    }
+
+    const user = await UserModel.findOne({ email: decoded.email });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.emailVerified) {
+      throw new Error("Email already verified");
+    }
+
+    user.emailVerified = true;
+
+    await user.save();
+
+    return user;
   } catch (error: any) {
     throw new Error(error);
   }

@@ -2,10 +2,12 @@ import bcrypt from "bcryptjs";
 import UserModel from "../models/user.model.js";
 import {
   generateAccessToken,
+  generateEmailVerificationToken,
   generateRefreshToken,
 } from "../utils/generateTokens.js";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import env from "../config/env.js";
+import { sendEmail } from "./mail.service.js";
 
 export const registerService = async (data: any) => {
   try {
@@ -28,23 +30,25 @@ export const registerService = async (data: any) => {
       email,
       password: hashedPassword,
       role,
+      emailVerified: false,
     });
 
-    const accessToken = generateAccessToken(
-      newUser._id.toString(),
-      newUser.role,
-    );
-    const refreshToken = generateRefreshToken(
-      newUser._id.toString(),
-      newUser.role,
+    const emailVerificationToken = generateEmailVerificationToken(
+      newUser.email,
     );
 
-    newUser.refreshtoken = refreshToken;
-    await newUser.save();
+    await sendEmail({
+      to: newUser.email,
+      subject: "Email Verification",
+      html: ` <p>Hi ${data.name},</p>
+                <p>Thank you for registering at <strong>Resume Analyzer</strong>. We're excited to have you on board!</p>
+                <p>Please verify your email address by clicking the link below:</p>
+                <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+                <p>If you did not create an account, please ignore this email.</p>
+                <p>Best regards,<br>The Resume Analyzer Team</p>`,
+    });
 
     return {
-      accessToken,
-      refreshToken,
       newUser,
     };
   } catch (error: any) {

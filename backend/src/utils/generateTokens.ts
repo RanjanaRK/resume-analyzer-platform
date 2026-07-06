@@ -12,3 +12,7 @@ export const generateRefreshToken = (userId: string, role: string) => {
     expiresIn: "1d",
   });
 };
+
+export const generateEmailVerificationToken = (email: string) => {
+  return jwt.sign({ email: email }, env.EMAIL_VERIFICATION_TOKEN);
+};

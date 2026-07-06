@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import env from "../config/env.js";
 
 const transporter = nodemailer.createTransport({
   host: "gmail",
@@ -17,14 +18,19 @@ try {
   console.error("Verification failed:", err);
 }
 
-export const sendEmail = async (
-  to: string,
-  subject: string,
-  html: string,
-  text: string,
-) => {
+export const sendEmail = async ({
+  to,
+  subject,
+  html,
+  text,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}) => {
   const mailOptions = {
-    from: process.env.SMTP_USER,
+    from: env.SMTP_USER,
     to,
     subject,
     html,

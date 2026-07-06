@@ -11,15 +11,7 @@ import {
 } from "../utils/cookiesOptions.js";
 
 export const register: RequestHandler = async (req, res) => {
-  const {
-    accessToken,
-    refreshToken,
-    newUser: user,
-  } = await registerService(req.body);
-
-  res.cookie("accesstoken", accessToken, accessTokenOptions);
-
-  res.cookie("refreshtoken", refreshToken, refreshTokenOptions);
+  const { newUser: user } = await registerService(req.body);
 
   return res.status(201).json({
     message: "User created successfully",

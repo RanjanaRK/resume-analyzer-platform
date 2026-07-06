@@ -1,5 +1,5 @@
 import connectDB from "./config/db.js";
-import authRouter from "./routes/auth.route.js";
+import authRouter from "./routes/auth.routes.js";
 import app from "./server.js";
 
 connectDB();

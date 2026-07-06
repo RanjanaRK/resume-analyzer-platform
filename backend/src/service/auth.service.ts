@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import UserModel from "../models/user.model.js";
+import UserModel from "../models/user.models.js";
 import {
   generateAccessToken,
   generateEmailVerificationToken,

@@ -112,3 +112,8 @@ export const logout: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const forgotPasswordController: RequestHandler = async (req, res) => {
+  try {
+  } catch (error) {}
+};

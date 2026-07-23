@@ -43,7 +43,7 @@ export const registerService = async (data: any) => {
       html: ` <p>Hi ${data.name},</p>
                 <p>Thank you for registering at <strong>Resume Analyzer</strong>. We're excited to have you on board!</p>
                 <p>Please verify your email address by clicking the link below:</p>
-                <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+                <a href="http://localhost:5000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
                 <p>If you did not create an account, please ignore this email.</p>
                 <p>Best regards,<br>The Resume Analyzer Team</p>`,
     });
@@ -64,7 +64,7 @@ export const loginService = async (data: any) => {
       throw new Error("All fields are required");
     }
 
-    const isExisted = await UserModel.findOne({ email });
+    const isExisted = await UserModel.findOne({ email }).select("+password");
 
     if (!isExisted) {
       throw new Error("isExisted not found");

@@ -3,6 +3,7 @@ import UserModel from "../models/user.models.js";
 import {
   generateAccessToken,
   generateEmailVerificationToken,
+  generateForgotPasswordToken,
   generateRefreshToken,
 } from "../utils/generateTokens.js";
 import jwt, { type JwtPayload } from "jsonwebtoken";
@@ -160,4 +161,29 @@ export const logoutService = async (refreshToken: string) => {
     { refreshtoken: refreshToken },
     { refreshtoken: "" },
   );
+};
+
+export const forgotPasswordService = async (email: string) => {
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const forgotPassToken = generateForgotPasswordToken(user.email);
+
+    await sendEmail({
+      to: user.email,
+      subject: "Password Reset",
+      html: ` <p>Hi ${user.name},</p>
+                <p>Click the link below to reset your password:</p>
+                <a href="http://localhost:5000/api/auth/reset-password?token=${forgotPassToken}">Reset Password</a>
+                <p>If you did not request a password reset, please ignore this email.</p>
+                <p>Best regards,<br>The Resume Analyzer Team</p>`,
+    });
+
+    return { user };
+  } catch (error: any) {
+    throw new Error(error);
+  }
 };

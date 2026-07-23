@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  forgotPasswordController,
   getAccessTokenController,
   login,
   logout,
@@ -18,5 +19,7 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 
 authRouter.post("/logout", logout);
+
+authRouter.post("/forgot-password", forgotPasswordController);
 
 export default authRouter;

@@ -16,3 +16,7 @@ export const generateRefreshToken = (userId: string, role: string) => {
 export const generateEmailVerificationToken = (email: string) => {
   return jwt.sign({ email: email }, env.EMAIL_VERIFICATION_TOKEN);
 };
+
+export const generateForgotPasswordToken = (email: string) => {
+  return jwt.sign({ email: email }, env.FORGOT_PASSWORD_TOKEN);
+};

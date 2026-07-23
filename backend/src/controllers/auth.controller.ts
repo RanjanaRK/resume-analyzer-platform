@@ -1,5 +1,6 @@
 import type { RequestHandler } from "express";
 import {
+  forgotPasswordService,
   getAccesstokenService,
   loginService,
   logoutService,
@@ -114,6 +115,17 @@ export const logout: RequestHandler = async (req, res) => {
 };
 
 export const forgotPasswordController: RequestHandler = async (req, res) => {
-  try {
-  } catch (error) {}
+  const { email } = req.body;
+
+  const { user } = await forgotPasswordService(email);
+
+  return res.status(200).json({
+    message: "Password reset link sent in your email successfully",
+    success: true,
+    user: {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
 };

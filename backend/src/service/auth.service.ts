@@ -140,10 +140,6 @@ export const getAccesstokenService = async (refreshToken: string) => {
     throw new Error("Invalid refresh token");
   }
 
-  // if (decode?.exp < Date.now() / 1000) {
-  //   throw new Error("Refresh token expired");
-  // }
-
   const user = await UserModel.findById(decode.id).select("-password");
 
   if (!user) {

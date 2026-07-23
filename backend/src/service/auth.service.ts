@@ -187,3 +187,26 @@ export const forgotPasswordService = async (email: string) => {
     throw new Error(error);
   }
 };
+
+export const resetPasswordService = async (token: string, password: string) => {
+  try {
+    const decoded = jwt.verify(token, env.FORGOT_PASSWORD_TOKEN) as JwtPayload;
+
+    if (!decoded) {
+      throw new Error("Invalid forgot password token");
+    }
+
+    const user = await UserModel.findOne({ email: decoded.email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+    return { user };
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};

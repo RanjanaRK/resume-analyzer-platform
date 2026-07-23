@@ -5,6 +5,7 @@ import {
   loginService,
   logoutService,
   registerService,
+  resetPasswordService,
   verifyEmailService,
 } from "../service/auth.service.js";
 import {
@@ -121,6 +122,30 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
 
   return res.status(200).json({
     message: "Password reset link sent in your email successfully",
+    success: true,
+    user: {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
+};
+
+export const resetPasswordController: RequestHandler = async (req, res) => {
+  const { token } = req.query;
+  const { password } = req.body;
+
+  if (!token || typeof token !== "string") {
+    return res.status(400).json({
+      message: "Token is required",
+      success: false,
+    });
+  }
+
+  const { user } = await resetPasswordService(token, password);
+
+  return res.status(200).json({
+    message: "Password reset successfully",
     success: true,
     user: {
       name: user.name,
